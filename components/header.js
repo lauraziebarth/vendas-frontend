@@ -1,16 +1,16 @@
-export default function Header({children, titulo}){
+export default function Header({children, title}){
     return(
         <div>
 
-            <div className="titulo-principal">
-                <h1>{titulo}</h1>
+            <div className="main-title">
+                <h1>{title}</h1>
             </div>
             
             {children}
 
             <style jsx>
             {`
-            .titulo-principal{
+            .main-title{
                 display: flex;
                 flex-direction: column;
                 align-content: top;
