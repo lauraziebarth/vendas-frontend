@@ -3,10 +3,16 @@ import Header from "../components/header"
 import Button from "../components/button"
 import TableOrders from "../components/table-orders"
 
-function Orders() {
-    const orders = [{id:1, numero:"1", cliente_nome: "Laura", total:59.00, rentabilidade:"boa"},
-                    {id:2, numero:"2", cliente_nome: "Murillo", total:69.00, rentabilidade:"ruim"}, 
-                    {id:3, numero:"3", cliente_nome: "Alice", total:79.00, rentabilidade:"normal"}]
+// This gets called on every request
+export async function getServerSideProps() {
+    // Fetch data from external API
+        const res = await fetch(`http://127.0.0.1:8000/pedidos/`)
+        const data = await res.json()
+    // Pass data to the page via props
+    return { props: { data } }
+    }
+
+function Orders({data=[]}) {
 
     return (
             <Layout>
@@ -14,7 +20,7 @@ function Orders() {
                     <Button title="Criar Pedido"/>
                 </Header>
 
-                <TableOrders list={orders}/>
+                <TableOrders list={data}/>
             </Layout>
     ) 
   }
