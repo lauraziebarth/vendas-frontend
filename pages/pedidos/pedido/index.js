@@ -8,7 +8,6 @@ import Tooltip from "../../../components/tooltip"
 import Excluir from "../../../assets/svg/excluir.svg"
 
 
-
 export async function getServerSideProps() {
     const resClient = await fetch(`http://127.0.0.1:8000/clientes/`)
     const dataClient = await resClient.json()
@@ -40,7 +39,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
 
     const handleItens = (e) => {
         setSearch('')
-        setItens([...itens, {...e, id:itens.length+1}])
+        setItens([...itens, {...e, id:itens.length+1, errors: {quantity: ''}}])
     }
     
     const onChangePriceItem = (e, index) => {
@@ -51,12 +50,19 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
 
     const onChangeQuantityItem = (e, index) => {
         const newItens = [...itens];
-        newItens[index].quantity = e.target.value;
-        setItens(newItens)
-    }
+        const quantity = e.target.value
+        const multiple = newItens[index].multiple
+        newItens[index].quantity = quantity
+        const errors = newItens[index].errors
+        errors["quantity"] = ''
 
-    const handleItemQuantity = (e) => {
-        setItemQuantity(e.target.value)
+        if (quantity % multiple !== 0){
+            errors["quantity"] = `Produto multiplo de ${multiple}`
+        } 
+        if (quantity <= 0) {
+            errors["quantity"] = `Quantidade deve ser maior que 0`
+        }
+        setItens(newItens)
     }
 
     const handleRemoveItem = (id) => {
@@ -140,6 +146,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                                 <label>
                                     Qtd: 
                                     <input type="number" name="quantity" value={item.quantity} onChange={(e) => {onChangeQuantityItem(e, index)}}/>
+                                    <span>{item.errors.quantity}</span>
                                 </label>
                             </div>
                             <div className='order-form-container-input'>
