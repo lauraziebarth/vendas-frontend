@@ -1,7 +1,7 @@
-export default function Button({title}){
+export default function Button({title, onClick}){
     return(
         <div className="box-button">
-            <button type="button" className="button">+ {title}</button>
+            <button type="button" className="button" onClick={onClick}>{title}</button>
         
         <style jsx>
             {`
