@@ -7,7 +7,7 @@ export default function TableOrders({list}){
             {list.map(item=>(
                 <div className="table-item">
                     <div className="order-info">
-                        <a className="order-number" href={`/pedidos/${item.id}`}>Pedido {item.numero}</a>
+                        <a className="order-number" href={`/pedidos/${item.id}`}>Pedido {item.id}</a>
                         <h2 className="client-name">Cliente: {item.cliente_nome}</h2>
                         <h3 className="order-total">Total: R${item.total}</h3>
                     </div>
