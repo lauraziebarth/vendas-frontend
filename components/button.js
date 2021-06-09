@@ -1,7 +1,7 @@
-export default function Button({title, onClick}){
+export default function Button({title, onClick, disabled}){
     return(
         <div className="box-button">
-            <button type="button" className="button" onClick={onClick}>{title}</button>
+            <button type="button" disabled={disabled} onClick={onClick}>{title}</button>
         
         <style jsx>
             {`
@@ -11,7 +11,7 @@ export default function Button({title, onClick}){
                 margin-top: 30px;
                 margin-left: 50px;
             }
-            .button{
+            button{
                 padding: 10px;
                 border: 1px solid #f2f2f2;
                 border-radius: 10px;
@@ -21,6 +21,13 @@ export default function Button({title, onClick}){
                 justify-content: flex-end;
                 font-weight: bolder;
             }
+            button:disabled,
+            button[disabled]{
+                border: 1px solid #999999;
+                background-color: #cccccc;
+                color: #666666;
+            }
+
             `}
         </style>
 
