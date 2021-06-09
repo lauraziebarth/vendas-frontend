@@ -10,9 +10,6 @@ export default function Menu(){
             <li className="sidebar-clients">
                 <a href="/clientes">Clientes</a>
             </li>
-            <li className="sidebar-users">
-                <a href="/usuarios">Usuários</a>
-            </li>
 
         <style jsx>
             {`
@@ -24,7 +21,7 @@ export default function Menu(){
             }
             .sidebar li{
                 list-style: none;
-                margin: 30px;
+                margin: 30px  50px;
             }
             .sidebar a{
                 text-decoration: none;
