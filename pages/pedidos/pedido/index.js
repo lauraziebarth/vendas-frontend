@@ -5,7 +5,9 @@ import Layout from "../../../layouts/admin/layout"
 import Header from "../../../components/header"
 import Button from "../../../components/button"
 import Tooltip from "../../../components/tooltip"
+import Rentability from "../../../components/rentability"
 import Excluir from "../../../assets/svg/excluir.svg"
+import { validateItensOrder } from "../../../utils/validation"
 
 
 export async function getServerSideProps() {
@@ -22,7 +24,8 @@ export async function getServerSideProps() {
         value: item.id,
         label: item.nome,
         multiple: item.multiplo,
-        price: item.preco_tabela
+        price: item.preco_tabela,
+        rentability: ''
     }))
 return { props: { dataClient:formatDataClient, dataProduct:formatDataProduct } }
 }
@@ -32,6 +35,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
     const [itens, setItens] = useState([])
     const [condicaoPagamento, setCondicaoPagamento] = useState('')
     const [search, setSearch] = useState('')
+    const isDisabled = validateItensOrder(itens)
 
     const handleClient = (e) => {
         setClient(e)
@@ -39,24 +43,48 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
 
     const handleItens = (e) => {
         setSearch('')
-        setItens([...itens, {...e, id:itens.length+1, errors: {quantity: ''}}])
+        setItens([...itens, {...e, id:itens.length+1, errors: {quantity: '', liquidityPrice: ''}}])
     }
     
-    const onChangePriceItem = (e, index) => {
-        const newItens = [...itens];
-        newItens[index].liquidityPrice = e.target.value;
+    const onChangePriceItem = (e, index, price) => {
+        const newItens = [...itens]
+        const liquidityPrice = e.target.value
+        const newLiquidityPrice = liquidityPrice ? parseFloat(liquidityPrice) : ''
+        const newPrice = parseFloat(price)
+        newItens[index].liquidityPrice = newLiquidityPrice
+        const errors = newItens[index].errors
+        errors["liquidityPrice"] = ''
+
+        const great = newLiquidityPrice > newPrice
+        const good = newLiquidityPrice >= (newPrice * 0.9)
+        const bad = newLiquidityPrice < (newPrice * 0.9)
+
+        if (bad) {
+            errors["liquidityPrice"] = `Ruim`
+            newItens[index].rentability = 'bad'
+        }
+        if (good) {
+            newItens[index].rentability = 'good'
+        }
+        if (great) {
+            newItens[index].rentability = 'great'
+
+        }
+        if (newLiquidityPrice === '') {
+            errors["liquidityPrice"] = ''
+        }
         setItens(newItens)
     }
 
     const onChangeQuantityItem = (e, index) => {
-        const newItens = [...itens];
+        const newItens = [...itens]
         const quantity = e.target.value
         const multiple = newItens[index].multiple
         newItens[index].quantity = quantity
         const errors = newItens[index].errors
         errors["quantity"] = ''
 
-        if (quantity % multiple !== 0){
+        if (quantity % multiple !== 0 && multiple !== null){
             errors["quantity"] = `Produto multiplo de ${multiple}`
         } 
         if (quantity <= 0) {
@@ -75,14 +103,17 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
     }
 
     const handleSubmit = async() => {
+        console.log(itens)
         const newItens = itens.map(item => ({
             produto_id: item.value,
             produto_nome: item.label,
-            produto_multiplo: item.multiple,
+            produto_multiplo: parseFloat(item.multiple),
             produto_preco_tabela: item.price,
             quantidade: item.quantity,
-            preco_liquido: item.liquidityPrice
+            preco_liquido: item.liquidityPrice,
+            rentabilidade: item.rentability
         }))
+        console.log(newItens)
         const data = {
             cliente: client.value,
             cliente_nome: client.label,
@@ -112,50 +143,61 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                     <div className='order-form-container-input'>
                         <label>
                             Cliente:
+                        </label>
                             <Select
                                 value={client}
                                 onChange={handleClient}
                                 options={dataClient}
+                                placeholder="Selecione o cliente..."
                             />
-                        </label>
                     </div>
 
                     <div className='order-form-container-input'>
                         <label>
                             Produtos:
+                        </label>
                             <Select
                                 value={search}
                                 onChange={handleItens}
                                 options={dataProduct}
+                                placeholder="Selecione os produtos..."
                             />
-                        </label>
                     </div>
                     {itens.map((item, index) => (
-                        <div key={item.id} className='order-form-attributes'>
-                            <div className='order-form-container'>
+                        <div key={item.id} className='order-form-attributes order-form-container-input'>
+                            <div className='order-form-attributes-input'>
                                 <label>
-                                    Nome: {item.label}
+                                    Nome:
                                 </label>
+                                <span>
+                                    {item.label}
+                                </span>
                             </div>
-                            <div className='order-form-container'>
+                            <div className='order-form-attributes-input'>
                                 <label>
-                                    Preço Tabela: {item.price}
+                                    Preço Tabela: 
                                 </label>
+                                <span>
+                                    {item.price}
+                                </span>
                             </div>
-                            <div className='order-form-container-input'>
-                                <label>
-                                    Qtd: 
-                                    <input type="number" name="quantity" value={item.quantity} onChange={(e) => {onChangeQuantityItem(e, index)}}/>
-                                    <span>{item.errors.quantity}</span>
+                            <div className='order-form-attributes-input'>
+                                <label htmlFor="quantity">
+                                    Qtd:
                                 </label>
+                                <input id="quantity" type="number" name="quantity" value={item.quantity} onChange={(e) => {onChangeQuantityItem(e, index)}}/>
+                                {item.quantity && (<span className="errors">{item.errors.quantity}</span>)}
                             </div>
-                            <div className='order-form-container-input'>
-                                <label>
-                                    Preço Líquido: 
-                                    <input type="number" name="price" value={item.liquidityPrice} onChange={(e) => {onChangePriceItem(e, index)}}/>
+                            <div className='order-form-attributes-input'>
+                                <label htmlFor="price">
+                                    Preço Líquido:
                                 </label>
+                                <div className="price">
+                                    R$ <input id="price" type="number" name="price" value={item.liquidityPrice} onChange={(e) => {onChangePriceItem(e, index, item.price)}}/>
+                                    {item.liquidityPrice !== '' && (<Rentability type={item.rentability}>{item.errors.liquidityPrice}</Rentability>)}
+                                </div>
                             </div>
-                            <div className='order-form-container-input'>
+                            <div className='order-form-attributes-input'>
                                 <Tooltip title="excluir">
                                     <button type="button" className="remove-item" onClick={() => {handleRemoveItem(item.id)}}><Excluir/></button>
                                 </Tooltip>
@@ -163,47 +205,78 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                         </div>
                     ))}
                     
-
-                    <br/>
-                    <br/>
-                    <br/>
-                    <div className='order-form-container-input'>
+                    <div className='payment'>
                         <label>
                             Condição de pagamento:
-                            <input type="text" name="payment" value={condicaoPagamento} onChange={handlePayment} />
                         </label>
+                            <input type="text" name="payment" value={condicaoPagamento} onChange={handlePayment} />
                     </div>
                 </form>
 
-                <Button title="Salvar" onClick={handleSubmit}/>
+                <Button title="Criar Pedido" onClick={handleSubmit} disabled={isDisabled}/>
 
                 <style jsx>
                 {`
                 .order-form{
                     margin: 50px;
                 }
-                .select-client{
-                    display: flex;
-                    padding: 3px 8px;
-                    margin: 10px 0;
-                    width: 500px;
-                    border: 1px solid #f2f2f2;
-                    border-radius: 4px;
-                    font-size: 15px;
-                }
                 option{
                     background-color: red;
                 }
                 .order-form-container-input{
-                    margin-bottom: 15px;
+                    margin-bottom: 20px;
                 }
                 .order-form-attributes{
                     display: flex;
                     flex-direction: row;
-                    font-size: 13px;
+                    font-size: 15px;
+                    border-bottom: 1px solid #cccccc;
+                    align-items: center;
+                    padding: 10px 5px;
+                    justify-content: space-between;
+                }
+                input{
+                    border: 1px solid #cccccc;
+                    min-height: 30px;
+                    max-width: 200px;
+                    border-radius: 4px;
                 }
                 .order-form-attributes input{
-                    max-width: 55px;
+                    max-width: 80px;
+                    margin: 0 3px;
+                }
+                label{
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                }
+                .remove-item{
+                    border: 1px solid #cccccc;
+                    background-color: transparent;
+                    border-radius: 4px;
+                }
+                .payment{
+                    margin-top: 80px;
+                }
+                .price{
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                }
+                .errors{
+                    display: block;
+                    font-size: 13px;
+                    margin-top: 5px;
+                    color: red;
+                    max-width: 80px;
+                }
+                input::-webkit-outer-spin-button,
+                input::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+                input[type=number] {
+                    -moz-appearance:textfield; /* Firefox */
                 }
                 `}
             </style>
