@@ -1,5 +1,5 @@
-import Rentability from "../components/rentability"
 import Tooltip from "../components/tooltip"
+import Editar from "../assets/svg/editar.svg"
 
 export default function TableOrders({list}){
     return(
@@ -7,15 +7,14 @@ export default function TableOrders({list}){
             {list.map(item=>(
                 <div className="table-item">
                     <div className="order-info">
-                        <a className="order-number" href={`/pedidos/${item.id}`}>Pedido {item.id}</a>
+                        <h1>Pedido {item.id}</h1>
                         <h2 className="client-name">Cliente: {item.cliente_nome}</h2>
                         <h3 className="order-total">Total: R${item.total}</h3>
                     </div>
 
-                    
-                    <div className="rentability-icon">
-                        <Tooltip title={`${item.rentabilidade}`}>
-                            <Rentability/>
+                    <div className="table-item-icon">
+                        <Tooltip title="editar">
+                            <a className="icon" href={`/pedidos/${item.id}`}><Editar/></a>
                         </Tooltip>
                     </div>
                 </div>     
@@ -32,17 +31,22 @@ export default function TableOrders({list}){
                 }
                 .table-item{
                     padding: 20px 10px;;
-                    border-top: 2px solid #f2f2f2;
+                    border-bottom: 2px solid #f2f2f2;
                     flex-direction: row;
                     display: flex;
                     justify-content: space-between;
+                }
+                h1{
+                    font-weiht: bold;
+                    font-size: 20px;
+
                 }
                 .table-item:hover{
                     background-color: #f2f2f2;
                     color: #4B2F7E;
                   }
                 .order-number{
-                    font-weight: bolder;
+                    font-weight: bold;
                     margin-bottom: 10px;
                 }
                 h2, h3{
