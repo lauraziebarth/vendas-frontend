@@ -16,7 +16,7 @@ export default function Layout({children}){
                 display: flex;
                 flex-direction: row;
                 background-color: #ffffff;
-                max-width: 800px;
+                max-width: 992px;
                 margin: 100px auto;
                 border-radius: 3px;
             }
