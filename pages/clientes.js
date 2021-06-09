@@ -2,7 +2,6 @@ import {useState, useEffect} from "react"
 
 import Layout from "../layouts/admin/layout"
 import Header from "../components/header"
-import Button from "../components/button"
 import Table from "../components/table"
 
 // This gets called on every request
@@ -17,9 +16,7 @@ return { props: { data } }
 function Clients({data=[]}) {
     return (
             <Layout>
-                <Header title="Clientes">
-                    <Button title="Cadastrar Cliente"/>
-                </Header>
+                <Header title="Clientes"/>
 
                 <Table list={data}/>
             </Layout>

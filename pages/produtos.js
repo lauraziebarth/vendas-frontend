@@ -1,6 +1,5 @@
 import Layout from "../layouts/admin/layout"
 import Header from "../components/header"
-import Button from "../components/button"
 import Table from "../components/table"
 
 // This gets called on every request
@@ -15,9 +14,7 @@ return { props: { data } }
 function Products({data=[]}) {
     return (
             <Layout>
-                <Header title="Produtos">
-                    <Button title="Cadastrar Produto"/>
-                </Header>
+                <Header title="Produtos"/>
 
                 <Table list={data}/>
             </Layout>
