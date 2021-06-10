@@ -37,9 +37,8 @@ export default function TableOrders({list}){
                     justify-content: space-between;
                 }
                 h1{
-                    font-weiht: bold;
-                    font-size: 20px;
-
+                    font-weight: 600;
+                    font-size: 18px;
                 }
                 .table-item:hover{
                     background-color: #f2f2f2;

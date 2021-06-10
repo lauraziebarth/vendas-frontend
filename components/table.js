@@ -3,7 +3,7 @@ export default function Table({list}){
         <div className="table">
             {list.map(item=>(
                 <div className="table-item">
-                    <a href={`/clients/${item.id}`}>{item.nome}</a>
+                    <h1>{item.nome}</h1>
                 </div>     
             ))}
 
@@ -28,14 +28,9 @@ export default function Table({list}){
                     background-color: #f2f2f2;
                     color: #4B2F7E;
                   }
-                .table-item-icon{
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-around;
-                    align-content: top;
-                }
-                .icon{
-                    padding: 0 3px;
+                h1{
+                    font-weight: 600;
+                    font-size: 18px;
                 }
                 `}
             </style>
