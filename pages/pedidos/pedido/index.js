@@ -38,7 +38,7 @@ return { props: { dataClient:formatDataClient, dataProduct:formatDataProduct } }
 function CreateOrder({dataClient=[], dataProduct=[]}) {
     const [client, setClient] = useState('')
     const [itens, setItens] = useState([])
-    const [condicaoPagamento, setCondicaoPagamento] = useState('')
+    const [paymentCondition, setPaymentCondition] = useState('')
     const [totalOrder, setTotalOrder] = useState(0)
     const [search, setSearch] = useState('')
     const isDisabled = validateItensOrder(itens) || !client
@@ -122,7 +122,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
     }
 
     const handlePayment = (e) => {
-        setCondicaoPagamento(e.target.value)
+        setPaymentCondition(e.target.value)
     }
 
     const handleSubmit = async() => {
@@ -139,7 +139,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
         const data = {
             cliente: client.value,
             cliente_nome: client.label,
-            condicao_pagamento: condicaoPagamento,
+            condicao_pagamento: paymentCondition,
             total: totalOrder,
             itens: newItens
         }
@@ -251,7 +251,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                         <label>
                             Condição de pagamento:
                         </label>
-                            <input type="text" name="payment" value={condicaoPagamento} onChange={handlePayment} />
+                            <input type="text" name="payment" value={paymentCondition} onChange={handlePayment} />
                     </div>
                 </form>
 
