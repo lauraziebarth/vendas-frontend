@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Select from 'react-select'
+import { useRouter } from 'next/router'
 
 import Layout from "../../../layouts/admin/layout"
 import Header from "../../../components/header"
@@ -12,14 +13,14 @@ import { calculateTotalOrder } from "../../../utils/calculate"
 
 
 export async function getServerSideProps() {
-    const resClient = await fetch(`http://127.0.0.1:8000/clientes/`)
+    const resClient = await fetch(`${process.env.NEXT_PUBLIC_API_URL}clientes/`)
     const dataClient = await resClient.json()
     const formatDataClient = dataClient.map(item => ({
         value: item.id,
         label: item.nome
     }))
 
-    const resProduct = await fetch(`http://127.0.0.1:8000/produtos/`)
+    const resProduct = await fetch(`${process.env.NEXT_PUBLIC_API_URL}produtos/`)
     const dataProduct = await resProduct.json()
     const formatDataProduct = dataProduct.map(item => ({
         value: item.id,
@@ -41,6 +42,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
     const [totalOrder, setTotalOrder] = useState(0)
     const [search, setSearch] = useState('')
     const isDisabled = validateItensOrder(itens) || !client
+    const router = useRouter()
 
     const handleClient = (e) => {
         setClient(e)
@@ -143,7 +145,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
         }
 
         const res = await fetch(
-            'http://localhost:8000/pedidos/',
+            `${process.env.NEXT_PUBLIC_API_URL}pedidos/`,
             {
               body: JSON.stringify(data),
               headers: {
@@ -151,7 +153,9 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
               },
               method: 'POST'
             }
-        )
+        )        
+        
+        router.push('/pedidos')
     }
 
     return (

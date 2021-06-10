@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 // This gets called on every request
 export async function getServerSideProps() {
     // Fetch data from external API
-    const res = await fetch(`http://127.0.0.1:8000/pedidos/`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}pedidos`)
     const data = await res.json()
     const dataDesc = data.sort((a , b) => b.id - a.id)
     // Pass data to the page via props
