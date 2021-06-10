@@ -16,9 +16,7 @@ export async function getServerSideProps() {
 function Clients({ data = [] }) {
   return (
     <Layout>
-      <Header title="Clientes" />
-
-      <Table list={data} />
+      <Header title="Clientes" /> <Table list={data} />{' '}
     </Layout>
   );
 }
