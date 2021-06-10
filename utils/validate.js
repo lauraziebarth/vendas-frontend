@@ -1,20 +1,20 @@
 export function validateItensOrder(itens) {
-    let hasError = false
+  let hasError = false;
 
-    if (itens.length === 0 ){
-        return true
-    } 
+  if (itens.length === 0) {
+    return true;
+  }
 
-    itens.some(item => {
-        if (item.errors.quantity || item.quantity === '') {
-            hasError = true
-            return false
-        }
-        if (item.errors.liquidityPrice || item.liquidityPrice === '') {
-            hasError = true
-            return false
-        }
-    });
+  itens.some((item) => {
+    if (item.errors.quantity || item.quantity === '') {
+      hasError = true;
+      return false;
+    }
+    if (item.errors.liquidityPrice || item.liquidityPrice === '') {
+      hasError = true;
+      return false;
+    }
+  });
 
-    return hasError
+  return hasError;
 }

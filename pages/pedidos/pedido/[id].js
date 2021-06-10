@@ -1,11 +1,10 @@
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
+function Order() {
+  const router = useRouter();
+  const { id } = router.query;
 
-function Order(){
-    const router = useRouter()
-    const { id } = router.query
-
-    return <p>Pedido: {id}</p>
+  return <p>Pedido: {id}</p>;
 }
 
-export default Order
+export default Order;

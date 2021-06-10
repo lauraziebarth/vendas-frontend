@@ -1,11 +1,11 @@
-const withReactSvg = require('next-react-svg')
-const path = require('path')
- 
+const withReactSvg = require('next-react-svg');
+const path = require('path');
+
 module.exports = withReactSvg({
   include: path.resolve(__dirname, 'assets/svg'),
   webpack(config, options) {
-    return config
-  }, 
+    return config;
+  },
   async redirects() {
     return [
       {
@@ -13,6 +13,6 @@ module.exports = withReactSvg({
         destination: '/pedidos',
         permanent: true,
       },
-    ]
-  }
-})
+    ];
+  },
+});

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint:prettier": "yarn prettier --write ."
   },
   "dependencies": {
     "next": "^10.2.0",
@@ -13,5 +14,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-select": "^4.3.1"
+  },
+  "devDependencies": {
+    "prettier": "2.3.1"
   }
 }

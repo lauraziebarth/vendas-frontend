@@ -1,14 +1,14 @@
-export default function Tooltip({children, title}) {
-    return(
-        <div className="overlay">
-            {children}
+export default function Tooltip({ children, title }) {
+  return (
+    <div className="overlay">
+      {children}
 
-            <div className="tooltip">
-                <span className="tooltip-title">{title}</span>
-            </div>
+      <div className="tooltip">
+        <span className="tooltip-title">{title}</span>
+      </div>
 
-            <style jsx>
-            {`
+      <style jsx>
+        {`
                 .overlay{
                     position: relative;
                 }
@@ -29,7 +29,7 @@ export default function Tooltip({children, title}) {
                     font-size: 11px;
                 
             `}
-            </style>
-        </div>
-    )
+      </style>
+    </div>
+  );
 }
