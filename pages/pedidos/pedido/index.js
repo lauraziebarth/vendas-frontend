@@ -8,7 +8,7 @@ import Button from "../../../components/button"
 import Tooltip from "../../../components/tooltip"
 import Rentability from "../../../components/rentability"
 import Excluir from "../../../assets/svg/excluir.svg"
-import { validateItensOrder } from "../../../utils/validation"
+import { validateItensOrder } from "../../../utils/validate"
 import { calculateTotalOrder } from "../../../utils/calculate"
 
 
