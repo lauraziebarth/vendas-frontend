@@ -8,6 +8,7 @@ import Tooltip from "../../../components/tooltip"
 import Rentability from "../../../components/rentability"
 import Excluir from "../../../assets/svg/excluir.svg"
 import { validateItensOrder } from "../../../utils/validation"
+import { calculateTotalOrder } from "../../../utils/calculate"
 
 
 export async function getServerSideProps() {
@@ -27,7 +28,8 @@ export async function getServerSideProps() {
         price: item.preco_tabela,
         rentability: '',
         quantity: '',
-        liquidityPrice: ''
+        liquidityPrice: '',
+        total: ''
     }))
 return { props: { dataClient:formatDataClient, dataProduct:formatDataProduct } }
 }
@@ -36,6 +38,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
     const [client, setClient] = useState('')
     const [itens, setItens] = useState([])
     const [condicaoPagamento, setCondicaoPagamento] = useState('')
+    const [totalOrder, setTotalOrder] = useState(0)
     const [search, setSearch] = useState('')
     const isDisabled = validateItensOrder(itens) || !client
 
@@ -54,6 +57,8 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
         const newLiquidityPrice = liquidityPrice ? parseFloat(liquidityPrice) : ''
         const newPrice = parseFloat(price)
         newItens[index].liquidityPrice = newLiquidityPrice
+        const total = newItens[index].quantity * newLiquidityPrice
+        newItens[index].total = total
         const errors = newItens[index].errors
         errors["liquidityPrice"] = ''
 
@@ -78,29 +83,40 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
             errors["liquidityPrice"] = 'Quantidade deve ser maior que 0'
         }
 
+        const totalOrder = calculateTotalOrder(newItens)
+
         setItens(newItens)
+        setTotalOrder(totalOrder)
     }
 
     const onChangeQuantityItem = (e, index) => {
         const newItens = [...itens]
         const quantity = e.target.value
+        const newQuantity = quantity ? parseFloat(quantity) : ''
         const multiple = newItens[index].multiple
-        newItens[index].quantity = quantity
+        newItens[index].quantity = newQuantity 
+        newItens[index].total = newQuantity * newItens[index].liquidityPrice
         const errors = newItens[index].errors
         errors["quantity"] = ''
 
-        if (quantity % multiple !== 0 && multiple !== null){
+        if (newQuantity % multiple !== 0 && multiple !== null){
             errors["quantity"] = `Produto multiplo de ${multiple}`
         } 
-        if (quantity <= 0) {
+        if (newQuantity <= 0) {
             errors["quantity"] = 'Quantidade deve ser maior que 0'
         }
+
+        const totalOrder = calculateTotalOrder(newItens)
+
         setItens(newItens)
+        setTotalOrder(totalOrder)
     }
 
     const handleRemoveItem = (id) => {
         const newItens = itens.filter((item) => (item.id!==id))
+        const totalOrder = calculateTotalOrder(newItens)
         setItens(newItens)
+        setTotalOrder(totalOrder)
     }
 
     const handlePayment = (e) => {
@@ -115,13 +131,14 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
             produto_preco_tabela: item.price,
             quantidade: item.quantity,
             preco_liquido: item.liquidityPrice,
+            total: item.total,
             rentabilidade: item.rentability
         }))
         const data = {
             cliente: client.value,
             cliente_nome: client.label,
             condicao_pagamento: condicaoPagamento,
-            total: 100.00,
+            total: totalOrder,
             itens: newItens
         }
 
@@ -181,7 +198,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                                     Preço Tabela: 
                                 </label>
                                 <span>
-                                    {item.price}
+                                    R$ {item.price}
                                 </span>
                             </div>
                             <div className='order-form-attributes-input'>
@@ -189,7 +206,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                                     Qtd:
                                 </label>
                                 <input id="quantity" type="number" name="quantity" value={item.quantity} onChange={(e) => {onChangeQuantityItem(e, index)}}/>
-                                {item.quantity && (<span className="errors">{item.errors.quantity}</span>)}
+                                {item.errors.quantity && (<span className="errors">{item.errors.quantity}</span>)}
                             </div>
                             <div className='order-form-attributes-input'>
                                 <label htmlFor="price">
@@ -199,7 +216,15 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                                     R$ <input id="price" type="number" name="price" value={item.liquidityPrice} onChange={(e) => {onChangePriceItem(e, index, item.price)}}/>
                                     {item.liquidityPrice !== '' && (<Rentability type={item.rentability}>$</Rentability>)}
                                 </div>
-                                {item.liquidityPrice && (<span className="errors">{item.errors.liquidityPrice}</span>)}
+                                {item.errors.liquidityPrice && (<span className="errors">{item.errors.liquidityPrice}</span>)}
+                            </div>
+                            <div>
+                                <label>
+                                    Total Item:
+                                </label>
+                                <span>
+                                    R$ {item.total}
+                                </span>
                             </div>
                             <div className='order-form-attributes-input'>
                                 <Tooltip title="excluir">
@@ -208,6 +233,15 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                             </div>
                         </div>
                     ))}
+
+                    <div className='total-order'>
+                        <label>
+                            Total Pedido: 
+                        </label>
+                        <span>
+                            R$ {totalOrder}
+                        </span>
+                    </div>
                     
                     <div className='payment'>
                         <label>
@@ -259,6 +293,13 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                     background-color: transparent;
                     border-radius: 4px;
                 }
+                .total-order{
+                    display: flex;
+                    justify-content: flex-end;
+                }
+                .total-order span{
+                    margin-left: 5px;
+                }
                 .payment{
                     margin-top: 80px;
                 }
@@ -280,7 +321,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                     margin: 0;
                 }
                 input[type=number] {
-                    -moz-appearance:textfield; /* Firefox */
+                    -moz-appearance:textfield;
                 }
                 `}
             </style>
