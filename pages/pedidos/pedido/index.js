@@ -25,17 +25,19 @@ export async function getServerSideProps() {
         label: item.nome,
         multiple: item.multiplo,
         price: item.preco_tabela,
-        rentability: ''
+        rentability: '',
+        quantity: '',
+        liquidityPrice: ''
     }))
 return { props: { dataClient:formatDataClient, dataProduct:formatDataProduct } }
 }
 
 function CreateOrder({dataClient=[], dataProduct=[]}) {
-    const [client, setClient] = useState(null)
+    const [client, setClient] = useState('')
     const [itens, setItens] = useState([])
     const [condicaoPagamento, setCondicaoPagamento] = useState('')
     const [search, setSearch] = useState('')
-    const isDisabled = validateItensOrder(itens)
+    const isDisabled = validateItensOrder(itens) || !client
 
     const handleClient = (e) => {
         setClient(e)
@@ -60,19 +62,22 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
         const bad = newLiquidityPrice < (newPrice * 0.9)
 
         if (bad) {
-            errors["liquidityPrice"] = `Ruim`
             newItens[index].rentability = 'bad'
+            errors["liquidityPrice"] = 'Rentabilidade ruim'
         }
         if (good) {
             newItens[index].rentability = 'good'
         }
         if (great) {
             newItens[index].rentability = 'great'
-
         }
         if (newLiquidityPrice === '') {
             errors["liquidityPrice"] = ''
         }
+        if (newLiquidityPrice <= 0) {
+            errors["liquidityPrice"] = 'Quantidade deve ser maior que 0'
+        }
+
         setItens(newItens)
     }
 
@@ -88,7 +93,7 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
             errors["quantity"] = `Produto multiplo de ${multiple}`
         } 
         if (quantity <= 0) {
-            errors["quantity"] = `Quantidade deve ser maior que 0`
+            errors["quantity"] = 'Quantidade deve ser maior que 0'
         }
         setItens(newItens)
     }
@@ -103,7 +108,6 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
     }
 
     const handleSubmit = async() => {
-        console.log(itens)
         const newItens = itens.map(item => ({
             produto_id: item.value,
             produto_nome: item.label,
@@ -113,7 +117,6 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
             preco_liquido: item.liquidityPrice,
             rentabilidade: item.rentability
         }))
-        console.log(newItens)
         const data = {
             cliente: client.value,
             cliente_nome: client.label,
@@ -194,8 +197,9 @@ function CreateOrder({dataClient=[], dataProduct=[]}) {
                                 </label>
                                 <div className="price">
                                     R$ <input id="price" type="number" name="price" value={item.liquidityPrice} onChange={(e) => {onChangePriceItem(e, index, item.price)}}/>
-                                    {item.liquidityPrice !== '' && (<Rentability type={item.rentability}>{item.errors.liquidityPrice}</Rentability>)}
+                                    {item.liquidityPrice !== '' && (<Rentability type={item.rentability}>$</Rentability>)}
                                 </div>
+                                {item.liquidityPrice && (<span className="errors">{item.errors.liquidityPrice}</span>)}
                             </div>
                             <div className='order-form-attributes-input'>
                                 <Tooltip title="excluir">

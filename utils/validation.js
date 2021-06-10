@@ -1,12 +1,16 @@
 export function validateItensOrder(itens) {
     let hasError = false
 
-    itens.every(item => {
-        if (item.errors.quantity) {
+    if (itens.length === 0 ){
+        return true
+    } 
+
+    itens.some(item => {
+        if (item.errors.quantity || item.quantity === '') {
             hasError = true
             return false
         }
-        if (item.errors.liquidityPrice) {
+        if (item.errors.liquidityPrice || item.liquidityPrice === '') {
             hasError = true
             return false
         }
