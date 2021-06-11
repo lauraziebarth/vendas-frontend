@@ -78,7 +78,7 @@ function CreateOrder({ dataClient = [], dataProduct = [] }) {
 
     if (bad) {
       newItens[index].rentability = 'bad';
-      errors['liquidityPrice'] = 'Rentabilidade ruim';
+      errors['liquidityPrice'] = 'Pedido não aceita rentabilidade ruim';
     }
     if (good) {
       newItens[index].rentability = 'good';
@@ -140,15 +140,15 @@ function CreateOrder({ dataClient = [], dataProduct = [] }) {
       produto_multiplo: parseFloat(item.multiple),
       produto_preco_tabela: item.price,
       quantidade: item.quantity,
-      preco_liquido: item.liquidityPrice,
-      total: item.total,
+      preco_liquido: item.liquidityPrice.toFixed(2),
+      total: item.total.toFixed(2),
       rentabilidade: item.rentability,
     }));
     const data = {
       cliente: client.value,
       cliente_nome: client.label,
       condicao_pagamento: paymentCondition,
-      total: totalOrder,
+      total: totalOrder.toFixed(2),
       itens: newItens,
     };
 
@@ -338,7 +338,7 @@ function CreateOrder({ dataClient = [], dataProduct = [] }) {
             font-size: 13px;
             margin-top: 5px;
             color: red;
-            max-width: 80px;
+            max-width: 90px;
           }
           input::-webkit-outer-spin-button,
           input::-webkit-inner-spin-button {

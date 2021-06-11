@@ -17,7 +17,7 @@ export async function getServerSideProps({ query }) {
   const dataOrder = await res.json();
   const formatDataOrder = {
     client: {
-      value: dataOrder.cliente_id,
+      value: dataOrder.cliente,
       label: dataOrder.cliente_nome,
     },
     paymentCondition: dataOrder.condicao_pagamento,
@@ -165,17 +165,17 @@ function EditOrder({
       produto_multiplo: parseFloat(item.multiple),
       produto_preco_tabela: item.price,
       quantidade: item.quantity,
-      preco_liquido: item.liquidityPrice,
-      total: item.total,
+      preco_liquido: item.liquidityPrice.toFixed(2),
+      total: item.total.toFixed(2),
       rentabilidade: item.rentability,
       id: item.id,
     }));
     const data = {
       id,
-      cliente: client.value,
+      cliente_id: client.value,
       cliente_nome: client.label,
       condicao_pagamento: paymentCondition,
-      total: totalOrder,
+      total: totalOrder.toFixed(2),
       itens: newItens,
     };
 
