@@ -14,7 +14,7 @@ export default function TableOrders({ list }) {
 
           <div className="table-item-icon">
             <Tooltip title="editar">
-              <a className="icon" href={`/pedidos/${item.id}`}>
+              <a className="icon" href={`/pedidos/pedido/${item.id}`}>
                 <Editar />
               </a>
             </Tooltip>
