@@ -6,11 +6,11 @@ export function validateItensOrder(itens) {
   }
 
   itens.some((item) => {
-    if (item.errors.quantity || item.quantity === '') {
+    if (item?.errors?.quantity || item.quantity === '') {
       hasError = true;
       return false;
     }
-    if (item.errors.liquidityPrice || item.liquidityPrice === '') {
+    if (item?.errors?.liquidityPrice || item.liquidityPrice === '') {
       hasError = true;
       return false;
     }
